@@ -1,0 +1,156 @@
+package com.dmitryy.notesapp.ui.list
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.mutableStateOf
+import com.dmitryy.notesapp.NotesApplication
+import com.dmitryy.notesapp.R
+import com.dmitryy.notesapp.data.Note
+import com.dmitryy.notesapp.data.NotesRepository
+import com.dmitryy.notesapp.ui.detail.NoteDetailActivity
+import com.dmitryy.notesapp.ui.login.LoginActivity
+import com.dmitryy.notesapp.ui.theme.NotesAppTheme
+import com.dmitryy.notesapp.utils.Logger
+import com.dmitryy.notesapp.utils.PreferencesManager
+
+class NotesActivity : ComponentActivity(), NotesContract.View {
+
+    private lateinit var presenter: NotesContract.Presenter
+    private val notesState = mutableStateOf<List<Note>>(emptyList())
+
+    private val importJsonLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            Logger.d("NotesActivity: importJsonLauncher - uri: $uri")
+            try {
+                val jsonContent = contentResolver.openInputStream(it)?.bufferedReader()?.use { reader ->
+                    reader.readText()
+                }
+                if (jsonContent != null) {
+                    Logger.d("NotesActivity: importJsonLauncher - content length: ${jsonContent.length}")
+                    presenter.importNotes(jsonContent)
+                    Logger.d("NotesActivity: importJsonLauncher - import successful")
+                    Toast.makeText(this, getString(R.string.import_success), Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Logger.e("NotesActivity: importJsonLauncher - import failed", e)
+                Toast.makeText(this, getString(R.string.import_failed, e.message), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Logger.d("NotesActivity: onCreate - START")
+
+        val prefsManager = PreferencesManager(this)
+        val isPasscodeEnabled = prefsManager.isPasscodeEnabled()
+        val isLoggedIn = com.dmitryy.notesapp.utils.SessionManager.isLoggedIn
+
+        Logger.d("NotesActivity: onCreate - passcodeEnabled: $isPasscodeEnabled, isLoggedIn: $isLoggedIn")
+
+        if (isPasscodeEnabled && !isLoggedIn) {
+            Logger.d("NotesActivity: onCreate - REDIRECTING to login (passcode required and not logged in)")
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_IS_SETUP, false)
+            startActivity(intent)
+            finish()
+            return
+        }
+        
+        Logger.d("NotesActivity: onCreate - PROCEEDING to main screen (no passcode or already logged in)")
+
+        val database = (application as NotesApplication).database
+        val repository = NotesRepository(database.noteDao())
+        presenter = NotesPresenter(repository)
+        presenter.attachView(this)
+
+        setContent {
+            NotesAppTheme {
+                NotesListScreen(
+                    notes = notesState.value,
+                    onNoteClick = { note -> presenter.onNoteClicked(note) },
+                    onAddNoteClick = { presenter.onAddNoteClicked() },
+                    onDeleteNote = { note -> presenter.onDeleteNote(note) },
+                    onSearchQueryChanged = { query -> presenter.onSearchQueryChanged(query) },
+                    onClearSearch = { presenter.onClearSearch() },
+                    onAbout = { handleAbout() },
+                    onExportJson = { handleExportJson() },
+                    onImportJson = { handleImportJson() },
+                    onSettings = { handleSettings() }
+                )
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Logger.d("NotesActivity: onResume")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Logger.d("NotesActivity: onDestroy")
+        if (::presenter.isInitialized) {
+            presenter.detachView()
+        }
+    }
+
+    override fun showNotes(notes: List<Note>) {
+        Logger.d("NotesActivity: showNotes - count: ${notes.size}")
+        notesState.value = notes
+    }
+
+    override fun showNoteDetail(noteId: Int) {
+        Logger.d("NotesActivity: showNoteDetail - noteId: $noteId")
+        val intent = Intent(this, NoteDetailActivity::class.java)
+        intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, noteId)
+        startActivity(intent)
+    }
+
+    override fun showAddNote() {
+        Logger.d("NotesActivity: showAddNote")
+        val intent = Intent(this, NoteDetailActivity::class.java)
+        startActivity(intent)
+    }
+
+    override fun showError(message: String) {
+        Logger.e("NotesActivity: showError - $message")
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleAbout() {
+        Logger.d("NotesActivity: handleAbout")
+        Toast.makeText(this, getString(R.string.about_message), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleExportJson() {
+        Logger.d("NotesActivity: handleExportJson")
+        try {
+            val jsonContent = presenter.exportAllNotes()
+            val shareIntent = com.dmitryy.notesapp.utils.FileUtils.saveAndShareJson(this, jsonContent)
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.export_json)))
+            Logger.d("NotesActivity: handleExportJson - export successful")
+            Toast.makeText(this, getString(R.string.export_success), Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Logger.e("NotesActivity: handleExportJson - export failed", e)
+            Toast.makeText(this, getString(R.string.export_failed, e.message), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun handleImportJson() {
+        Logger.d("NotesActivity: handleImportJson - launching file picker")
+        importJsonLauncher.launch("application/json")
+    }
+
+    private fun handleSettings() {
+        Logger.d("NotesActivity: handleSettings")
+        val intent = Intent(this, com.dmitryy.notesapp.ui.settings.SettingsActivity::class.java)
+        startActivity(intent)
+    }
+}

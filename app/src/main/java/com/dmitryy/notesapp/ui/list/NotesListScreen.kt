@@ -1,0 +1,290 @@
+package com.dmitryy.notesapp.ui.list
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.dmitryy.notesapp.R
+import com.dmitryy.notesapp.data.Note
+import com.dmitryy.notesapp.ui.theme.DarkBg
+import com.dmitryy.notesapp.ui.theme.DarkCard
+import com.dmitryy.notesapp.ui.theme.NeonCyan
+import com.dmitryy.notesapp.ui.theme.NeonPink
+import com.dmitryy.notesapp.ui.theme.TextPrimary
+import com.dmitryy.notesapp.ui.theme.TextSecondary
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NotesListScreen(
+    notes: List<Note>,
+    onNoteClick: (Note) -> Unit,
+    onAddNoteClick: () -> Unit,
+    onDeleteNote: (Note) -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    onClearSearch: () -> Unit,
+    onAbout: () -> Unit,
+    onExportJson: () -> Unit,
+    onImportJson: () -> Unit,
+    onSettings: () -> Unit
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    var showMenu by remember { mutableStateOf(false) }
+    val showSearch = notes.isNotEmpty() || searchQuery.isNotEmpty()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_name), color = NeonCyan) },
+                actions = {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.menu), tint = NeonCyan)
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.about)) },
+                            onClick = {
+                                showMenu = false
+                                onAbout()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.export_json)) },
+                            onClick = {
+                                showMenu = false
+                                onExportJson()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.import_json)) },
+                            onClick = {
+                                showMenu = false
+                                onImportJson()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.settings)) },
+                            onClick = {
+                                showMenu = false
+                                onSettings()
+                            }
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkBg
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddNoteClick,
+                containerColor = NeonCyan,
+                contentColor = Color.Black,
+                modifier = Modifier.testTag("add_note_fab")
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_note))
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (showSearch) {
+                TextField(
+                    value = searchQuery,
+                    onValueChange = {
+                        searchQuery = it
+                        onSearchQueryChanged(it)
+                    },
+                    placeholder = { Text(stringResource(R.string.search_notes), color = TextSecondary) },
+                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search), tint = NeonCyan) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = {
+                                searchQuery = ""
+                                onClearSearch()
+                            }) {
+                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.clear), tint = NeonPink)
+                            }
+                        }
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = DarkCard,
+                        unfocusedContainerColor = DarkCard,
+                        focusedTextColor = NeonCyan,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = NeonCyan,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
+
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (notes.isEmpty() && searchQuery.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.add_first_note),
+                        color = NeonPink,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                } else if (notes.isEmpty() && searchQuery.isNotEmpty()) {
+                    Text(
+                        text = stringResource(R.string.no_results_found),
+                        color = TextSecondary,
+                        fontSize = 18.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(notes, key = { it.id }) { note ->
+                            val dismissState = rememberSwipeToDismissBoxState(
+                                confirmValueChange = {
+                                    if (it == SwipeToDismissBoxValue.EndToStart) {
+                                        onDeleteNote(note)
+                                        true
+                                    } else {
+                                        false
+                                    }
+                                }
+                            )
+
+                            SwipeToDismissBox(
+                                state = dismissState,
+                                backgroundContent = {
+                                    val color = if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                        Color.Red
+                                    } else {
+                                        Color.Transparent
+                                    }
+
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(color, RoundedCornerShape(8.dp))
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.CenterEnd
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = stringResource(R.string.delete),
+                                            tint = Color.White
+                                        )
+                                    }
+                                },
+                                content = {
+                                    NoteItem(note = note, onClick = { onNoteClick(note) })
+                                },
+                                enableDismissFromStartToEnd = false
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NoteItem(note: Note, onClick: () -> Unit) {
+    val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
+    val formattedDate = dateFormat.format(Date(note.createdAt))
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(DarkCard)
+            .border(2.dp, NeonCyan, RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = note.title,
+            color = NeonCyan,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = note.content,
+            color = TextPrimary,
+            fontSize = 14.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+        Text(
+            text = formattedDate,
+            color = TextSecondary,
+            fontSize = 12.sp,
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(top = 8.dp)
+        )
+    }
+}
