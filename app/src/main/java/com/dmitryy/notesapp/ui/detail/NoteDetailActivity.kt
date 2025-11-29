@@ -89,6 +89,7 @@ class NoteDetailActivity : ComponentActivity(), NoteDetailContract.View {
         Logger.d("NoteDetailActivity: showNote - id: ${note.id}, title: '${note.title}'")
         titleState.value = note.title
         contentState.value = note.content
+        isPinnedState.value = note.isPinned
         showDelete = true
     }
 
