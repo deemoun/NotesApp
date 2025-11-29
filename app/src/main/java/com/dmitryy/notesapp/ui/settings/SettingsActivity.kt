@@ -21,6 +21,10 @@ class SettingsActivity : ComponentActivity(), SettingsContract.View {
 
     private lateinit var presenter: SettingsContract.Presenter
     private var isPasscodeEnabled by mutableStateOf(false)
+    private var showDebugSection by mutableStateOf(false)
+    private var debugIsRooted by mutableStateOf(false)
+    private var debugHasEmulator by mutableStateOf(false)
+    private var debugHasMagisk by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +35,7 @@ class SettingsActivity : ComponentActivity(), SettingsContract.View {
         presenter = SettingsPresenter(repository, this)
         presenter.attachView(this)
         presenter.loadPasscodeState()
+        presenter.loadDebugInfo()
 
         setContent {
             NotesAppTheme {
@@ -51,7 +56,11 @@ class SettingsActivity : ComponentActivity(), SettingsContract.View {
                         Logger.d("SettingsActivity: onPasscodeToggle - $enabled")
                         presenter.togglePasscode(enabled)
                     },
-                    isPasscodeEnabled = isPasscodeEnabled
+                    isPasscodeEnabled = isPasscodeEnabled,
+                    showDebugSection = showDebugSection,
+                    debugIsRooted = debugIsRooted,
+                    debugHasEmulator = debugHasEmulator,
+                    debugHasMagisk = debugHasMagisk
                 )
             }
         }
@@ -87,5 +96,13 @@ class SettingsActivity : ComponentActivity(), SettingsContract.View {
     override fun updatePasscodeState(enabled: Boolean) {
         Logger.d("SettingsActivity: updatePasscodeState - $enabled")
         isPasscodeEnabled = enabled
+    }
+
+    override fun showDebugInfo(isRooted: Boolean, hasEmulator: Boolean, hasMagisk: Boolean) {
+        Logger.d("SettingsActivity: showDebugInfo - isRooted: $isRooted, hasEmulator: $hasEmulator, hasMagisk: $hasMagisk")
+        showDebugSection = isRooted || hasEmulator || hasMagisk
+        debugIsRooted = isRooted
+        debugHasEmulator = hasEmulator
+        debugHasMagisk = hasMagisk
     }
 }

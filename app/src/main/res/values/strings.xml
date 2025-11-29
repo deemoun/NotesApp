@@ -61,6 +61,7 @@
     <string name="incorrect_passcode">Incorrect passcode</string>
     <string name="passcode_mismatch">Passcodes do not match</string>
     <string name="passcode_set">Passcode set successfully</string>
+    
     <!-- Trash Bin -->
     <string name="trash_bin">Trash Bin</string>
     <string name="empty_trash">Empty Trash</string>
@@ -71,4 +72,7 @@
     <string name="notes_restored">All notes restored</string>
     <string name="note_restored">Note restored</string>
     <string name="delete_forever">Delete Forever</string>
+    
+    <!-- Debug -->
+    <string name="debug_section">Debug</string>
 </resources>

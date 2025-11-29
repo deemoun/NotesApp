@@ -49,7 +49,11 @@ fun SettingsScreen(
     onClearCache: () -> Unit,
     onNukeDatabase: () -> Unit,
     onPasscodeToggle: (Boolean) -> Unit,
-    isPasscodeEnabled: Boolean
+    isPasscodeEnabled: Boolean,
+    showDebugSection: Boolean = false,
+    debugIsRooted: Boolean = false,
+    debugHasEmulator: Boolean = false,
+    debugHasMagisk: Boolean = false
 ) {
     var showNukeDialog by remember { mutableStateOf(false) }
 
@@ -125,6 +129,40 @@ fun SettingsScreen(
                     .padding(vertical = 8.dp)
             ) {
                 Text(stringResource(R.string.nuke_database), fontWeight = FontWeight.Bold)
+            }
+
+            // Debug Section (only shown if any flag is true)
+            if (showDebugSection) {
+                Spacer(modifier = Modifier.height(32.dp))
+                
+                Text(
+                    text = stringResource(R.string.debug_section),
+                    color = NeonPink,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+                
+                Text(
+                    text = "isRooted: $debugIsRooted",
+                    color = if (debugIsRooted) NeonPink else TextSecondary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                
+                Text(
+                    text = "hasEmulator: $debugHasEmulator",
+                    color = if (debugHasEmulator) NeonPink else TextSecondary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                
+                Text(
+                    text = "hasMagisk: $debugHasMagisk",
+                    color = if (debugHasMagisk) NeonPink else TextSecondary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
         }
     }

@@ -9,6 +9,7 @@ interface SettingsContract {
         fun showDatabaseNuked()
         fun navigateToPasscodeSetup()
         fun updatePasscodeState(enabled: Boolean)
+        fun showDebugInfo(isRooted: Boolean, hasEmulator: Boolean, hasMagisk: Boolean)
     }
 
     interface Presenter : BasePresenter<View> {
@@ -16,5 +17,6 @@ interface SettingsContract {
         fun nukeDatabase()
         fun togglePasscode(enabled: Boolean)
         fun loadPasscodeState()
+        fun loadDebugInfo()
     }
 }

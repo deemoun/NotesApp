@@ -87,4 +87,13 @@ class SettingsPresenter(
         Logger.d("SettingsPresenter: loadPasscodeState - enabled: $enabled")
         view?.updatePasscodeState(enabled)
     }
+
+    override fun loadDebugInfo() {
+        Logger.d("SettingsPresenter: loadDebugInfo")
+        val isRooted = com.dmitryy.notesapp.utils.SecurityUtils.isRooted()
+        val hasEmulator = com.dmitryy.notesapp.utils.SecurityUtils.hasEmulator()
+        val hasMagisk = com.dmitryy.notesapp.utils.SecurityUtils.hasMagisk()
+        Logger.d("SettingsPresenter: loadDebugInfo - isRooted: $isRooted, hasEmulator: $hasEmulator, hasMagisk: $hasMagisk")
+        view?.showDebugInfo(isRooted, hasEmulator, hasMagisk)
+    }
 }
