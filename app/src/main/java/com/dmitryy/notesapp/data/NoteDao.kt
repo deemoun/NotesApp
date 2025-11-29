@@ -42,6 +42,12 @@ interface NoteDao {
     @Query("DELETE FROM notes WHERE isDeleted = 1")
     suspend fun emptyTrash()
 
+    @Query("SELECT * FROM notes WHERE isPinned = 1 AND isDeleted = 0 ORDER BY createdAt DESC")
+    fun getPinnedNotes(): Flow<List<Note>>
+
+    @Query("UPDATE notes SET isPinned = :isPinned WHERE id = :noteId")
+    suspend fun togglePin(noteId: Int, isPinned: Boolean)
+
     @Query("DELETE FROM notes")
     suspend fun deleteAll()
 }

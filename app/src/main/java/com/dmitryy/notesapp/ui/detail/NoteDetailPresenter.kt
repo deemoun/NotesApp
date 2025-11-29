@@ -37,6 +37,7 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
                 Logger.d("NoteDetailPresenter: loadNote - note found: '${note.title}'")
                 currentNote = note
                 view?.showNote(note)
+                view?.updatePinState(note.isPinned)
             } else {
                 Logger.w("NoteDetailPresenter: loadNote - note not found for id: $id")
             }
@@ -84,5 +85,18 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
     override fun onExportPdf(title: String, content: String) {
         Logger.d("NoteDetailPresenter: onExportPdf - title: '$title', content length: ${content.length}")
         view?.exportNoteToPdf(title, content)
+    }
+
+    override fun togglePin() {
+        Logger.d("NoteDetailPresenter: togglePin")
+        launch {
+            currentNote?.let { note ->
+                val newPinState = !note.isPinned
+                Logger.d("NoteDetailPresenter: togglePin - toggling pin for note id: ${note.id}, new state: $newPinState")
+                repository.togglePin(note.id, newPinState)
+                currentNote = note.copy(isPinned = newPinState)
+                view?.updatePinState(newPinState)
+            } ?: Logger.w("NoteDetailPresenter: togglePin - no current note to toggle pin")
+        }
     }
 }

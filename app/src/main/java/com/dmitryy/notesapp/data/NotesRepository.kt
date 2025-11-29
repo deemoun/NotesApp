@@ -46,4 +46,10 @@ class NotesRepository(private val noteDao: NoteDao) {
     suspend fun emptyTrash() {
         noteDao.emptyTrash()
     }
+
+    val pinnedNotes: Flow<List<Note>> = noteDao.getPinnedNotes()
+
+    suspend fun togglePin(noteId: Int, isPinned: Boolean) {
+        noteDao.togglePin(noteId, isPinned)
+    }
 }

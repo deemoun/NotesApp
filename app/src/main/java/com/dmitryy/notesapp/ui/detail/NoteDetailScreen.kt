@@ -11,7 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,7 +55,9 @@ fun NoteDetailScreen(
     onDelete: () -> Unit,
     onBack: () -> Unit,
     onExportPdf: () -> Unit,
-    showDelete: Boolean
+    showDelete: Boolean,
+    isPinned: Boolean = false,
+    onTogglePin: () -> Unit = {}
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -71,6 +75,17 @@ fun NoteDetailScreen(
                     }
                 },
                 actions = {
+                    // Pin button (only if note exists)
+                    if (showDelete) {
+                        IconButton(onClick = onTogglePin) {
+                            Icon(
+                                imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                                contentDescription = if (isPinned) "Unpin" else "Pin",
+                                tint = if (isPinned) NeonPink else NeonCyan
+                            )
+                        }
+                    }
+                    
                     // Save button
                     IconButton(onClick = onSave, modifier = Modifier.testTag("save_button")) {
                         Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.save), tint = NeonCyan)

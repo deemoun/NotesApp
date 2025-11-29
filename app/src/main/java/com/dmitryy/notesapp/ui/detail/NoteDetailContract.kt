@@ -9,6 +9,7 @@ interface NoteDetailContract {
         fun showNote(note: Note)
         fun close()
         fun exportNoteToPdf(title: String, content: String)
+        fun updatePinState(isPinned: Boolean)
     }
 
     interface Presenter : BasePresenter<View> {
@@ -16,5 +17,6 @@ interface NoteDetailContract {
         fun saveNote(title: String, content: String)
         fun deleteNote()
         fun onExportPdf(title: String, content: String)
+        fun togglePin()
     }
 }

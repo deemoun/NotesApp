@@ -85,6 +85,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
                     onExportJson = { handleExportJson() },
                     onImportJson = { handleImportJson() },
                     onTrashBin = { handleTrashBin() },
+                    onPinned = { handlePinned() },
                     onSettings = { handleSettings() }
                 )
             }
@@ -156,6 +157,11 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
     private fun handleTrashBin() {
         Logger.d("NotesActivity: handleTrashBin")
         NavigationUtils.navigateToTrashBin(this)
+    }
+
+    private fun handlePinned() {
+        Logger.d("NotesActivity: handlePinned")
+        NavigationUtils.navigateToPinned(this)
     }
 
     private fun handleSettings() {

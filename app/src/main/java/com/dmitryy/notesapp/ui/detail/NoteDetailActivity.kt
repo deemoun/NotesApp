@@ -23,6 +23,7 @@ class NoteDetailActivity : ComponentActivity(), NoteDetailContract.View {
     private lateinit var presenter: NoteDetailContract.Presenter
     private val titleState = mutableStateOf("")
     private val contentState = mutableStateOf("")
+    private val isPinnedState = mutableStateOf(false)
     private var showDelete = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +68,12 @@ class NoteDetailActivity : ComponentActivity(), NoteDetailContract.View {
                         Logger.d("NoteDetailActivity: onExportPdf")
                         presenter.onExportPdf(titleState.value, contentState.value)
                     },
-                    showDelete = showDelete
+                    showDelete = showDelete,
+                    isPinned = isPinnedState.value,
+                    onTogglePin = {
+                        Logger.d("NoteDetailActivity: onTogglePin")
+                        presenter.togglePin()
+                    }
                 )
             }
         }
@@ -106,5 +112,10 @@ class NoteDetailActivity : ComponentActivity(), NoteDetailContract.View {
             Logger.e("NoteDetailActivity: exportNoteToPdf - failed", e)
             showError(getString(R.string.export_pdf_failed, e.message))
         }
+    }
+
+    override fun updatePinState(isPinned: Boolean) {
+        Logger.d("NoteDetailActivity: updatePinState - isPinned: $isPinned")
+        isPinnedState.value = isPinned
     }
 }

@@ -73,6 +73,10 @@
     <string name="note_restored">Note restored</string>
     <string name="delete_forever">Delete Forever</string>
     
+    <!-- Pinned Notes -->
+    <string name="pinned_notes">Pinned Notes</string>
+    <string name="no_pinned_notes">No pinned notes</string>
+    
     <!-- Debug -->
     <string name="debug_section">Debug</string>
 </resources>

@@ -9,5 +9,6 @@ data class Note(
     val title: String,
     val content: String,
     val createdAt: Long = System.currentTimeMillis(),
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val isPinned: Boolean = false
 )

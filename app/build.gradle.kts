@@ -84,4 +84,7 @@ dependencies {
     
     // Encrypted SharedPreferences
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    // Extended Icons
+    implementation("androidx.compose.material:material-icons-extended")
 }

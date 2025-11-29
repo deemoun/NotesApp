@@ -34,6 +34,9 @@
         <activity
             android:name=".ui.trash.TrashBinActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.pinned.PinnedNotesActivity"
+            android:exported="false" />
         
         <provider
             android:name="androidx.core.content.FileProvider"
