@@ -17,6 +17,7 @@ interface NotesContract {
         fun onNoteClicked(note: Note)
         fun onAddNoteClicked()
         fun onDeleteNote(note: Note)
+        fun onPinNote(note: Note)
         fun onSearchQueryChanged(query: String)
         fun onClearSearch()
         fun exportAllNotes(): String
