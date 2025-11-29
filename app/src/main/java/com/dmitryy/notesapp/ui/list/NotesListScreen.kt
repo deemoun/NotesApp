@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -69,6 +70,7 @@ fun NotesListScreen(
     onNoteClick: (Note) -> Unit,
     onAddNoteClick: () -> Unit,
     onDeleteNote: (Note) -> Unit,
+    onPinNote: (Note) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onClearSearch: () -> Unit,
     onAbout: () -> Unit,
@@ -222,11 +224,16 @@ fun NotesListScreen(
                         items(notes, key = { it.id }) { note ->
                             val dismissState = rememberSwipeToDismissBoxState(
                                 confirmValueChange = {
-                                    if (it == SwipeToDismissBoxValue.EndToStart) {
-                                        onDeleteNote(note)
-                                        true
-                                    } else {
-                                        false
+                                    when (it) {
+                                        SwipeToDismissBoxValue.EndToStart -> {
+                                            onDeleteNote(note)
+                                            true
+                                        }
+                                        SwipeToDismissBoxValue.StartToEnd -> {
+                                            onPinNote(note)
+                                            false
+                                        }
+                                        else -> false
                                     }
                                 }
                             )
@@ -234,10 +241,15 @@ fun NotesListScreen(
                             SwipeToDismissBox(
                                 state = dismissState,
                                 backgroundContent = {
-                                    val color = if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                                        Color.Red
-                                    } else {
-                                        Color.Transparent
+                                    val color = when (dismissState.dismissDirection) {
+                                        SwipeToDismissBoxValue.StartToEnd -> NeonCyan
+                                        SwipeToDismissBoxValue.EndToStart -> Color.Red
+                                        else -> Color.Transparent
+                                    }
+                                    val alignment = when (dismissState.dismissDirection) {
+                                        SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
+                                        SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
+                                        else -> Alignment.Center
                                     }
 
                                     Box(
@@ -245,19 +257,27 @@ fun NotesListScreen(
                                             .fillMaxSize()
                                             .background(color, RoundedCornerShape(8.dp))
                                             .padding(16.dp),
-                                        contentAlignment = Alignment.CenterEnd
+                                        contentAlignment = alignment
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = stringResource(R.string.delete),
-                                            tint = Color.White
-                                        )
+                                        when (dismissState.dismissDirection) {
+                                            SwipeToDismissBoxValue.StartToEnd -> Icon(
+                                                imageVector = Icons.Default.PushPin,
+                                                contentDescription = stringResource(R.string.pin_note),
+                                                tint = Color.Black
+                                            )
+                                            SwipeToDismissBoxValue.EndToStart -> Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = stringResource(R.string.delete),
+                                                tint = Color.White
+                                            )
+                                            else -> {}
+                                        }
                                     }
                                 },
                                 content = {
                                     NoteItem(note = note, onClick = { onNoteClick(note) })
                                 },
-                                enableDismissFromStartToEnd = false
+                                enableDismissFromStartToEnd = true
                             )
                         }
                     }

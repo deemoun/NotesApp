@@ -76,7 +76,8 @@
     <!-- Pinned Notes -->
     <string name="pinned_notes">Pinned Notes</string>
     <string name="no_pinned_notes">No pinned notes</string>
-    
+    <string name="pin_note">Pin note</string>
+
     <!-- Debug -->
     <string name="debug_section">Debug</string>
 </resources>

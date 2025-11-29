@@ -76,6 +76,13 @@ class NotesPresenter(private val repository: NotesRepository) : NotesContract.Pr
         }
     }
 
+    override fun onPinNote(note: Note) {
+        Logger.d("NotesPresenter: onPinNote - noteId: ${note.id}, title: '${note.title}'")
+        launch {
+            repository.togglePin(note.id, true)
+        }
+    }
+
     override fun onSearchQueryChanged(query: String) {
         Logger.d("NotesPresenter: onSearchQueryChanged - query: '$query'")
         currentQuery = query

@@ -79,6 +79,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
                     onNoteClick = { note -> presenter.onNoteClicked(note) },
                     onAddNoteClick = { presenter.onAddNoteClicked() },
                     onDeleteNote = { note -> presenter.onDeleteNote(note) },
+                    onPinNote = { note -> presenter.onPinNote(note) },
                     onSearchQueryChanged = { query -> presenter.onSearchQueryChanged(query) },
                     onClearSearch = { presenter.onClearSearch() },
                     onAbout = { handleAbout() },
