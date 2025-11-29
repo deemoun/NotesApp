@@ -21,6 +21,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
     private lateinit var presenter: NotesContract.Presenter
     private val notesState = mutableStateOf<List<Note>>(emptyList())
     private val showTrashBinState = mutableStateOf(false)
+    private val viewModeState = mutableStateOf(ViewMode.LIST)
 
     private val importJsonLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
@@ -73,10 +74,12 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
                 NotesListScreen(
                     notes = notesState.value,
                     showTrashBin = showTrashBinState.value,
+                    viewMode = viewModeState.value,
                     onNoteClick = { note -> presenter.onNoteClicked(note) },
                     onAddNoteClick = { presenter.onAddNoteClicked() },
                     onDeleteNote = { note -> presenter.onDeleteNote(note) },
                     onPinNote = { note -> presenter.onPinNote(note) },
+                    onToggleViewMode = { toggleViewMode() },
                     onSearchQueryChanged = { query -> presenter.onSearchQueryChanged(query) },
                     onClearSearch = { presenter.onClearSearch() },
                     onAbout = { handleAbout() },
@@ -129,6 +132,13 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
         ToastUtils.createToast(this, message)
     }
 
+    private fun toggleViewMode() {
+        viewModeState.value = when (viewModeState.value) {
+            ViewMode.LIST -> ViewMode.GRID
+            ViewMode.GRID -> ViewMode.LIST
+        }
+    }
+
     private fun handleAbout() {
         Logger.d("NotesActivity: handleAbout")
         ToastUtils.createToast(this, R.string.about_message)
@@ -172,4 +182,9 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
         Logger.d("NotesActivity: handleSettings")
         NavigationUtils.navigateToSettings(this)
     }
+}
+
+enum class ViewMode {
+    LIST,
+    GRID
 }

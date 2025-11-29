@@ -34,6 +34,10 @@
     <!-- Menu -->
     <string name="menu">Menu</string>
     <string name="about">About</string>
+    <string name="list_view">List view</string>
+    <string name="grid_view">Grid view</string>
+    <string name="switch_to_list_view">Switch to list view</string>
+    <string name="switch_to_grid_view">Switch to grid view</string>
     <string name="export_json">Export as JSON</string>
     <string name="import_json">Import JSON</string>
     <string name="about_message">Will be implemented soon</string>
