@@ -14,6 +14,7 @@ import com.dmitryy.notesapp.data.NotesRepository
 import com.dmitryy.notesapp.ui.login.LoginActivity
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
+import com.dmitryy.notesapp.utils.NavigationUtils
 import com.dmitryy.notesapp.utils.ToastUtils
 
 class SettingsActivity : ComponentActivity(), SettingsContract.View {
@@ -79,9 +80,7 @@ class SettingsActivity : ComponentActivity(), SettingsContract.View {
 
     override fun navigateToPasscodeSetup() {
         Logger.d("SettingsActivity: navigateToPasscodeSetup")
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.putExtra(LoginActivity.EXTRA_IS_SETUP, true)
-        startActivity(intent)
+        NavigationUtils.navigateToLogin(this, isSetup = true)
         finish()
     }
 

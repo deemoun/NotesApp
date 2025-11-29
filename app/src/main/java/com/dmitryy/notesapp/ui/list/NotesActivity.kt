@@ -15,6 +15,7 @@ import com.dmitryy.notesapp.ui.detail.NoteDetailActivity
 import com.dmitryy.notesapp.ui.login.LoginActivity
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
+import com.dmitryy.notesapp.utils.NavigationUtils
 import com.dmitryy.notesapp.utils.PreferencesManager
 import com.dmitryy.notesapp.utils.ToastUtils
 
@@ -58,9 +59,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
 
         if (isPasscodeEnabled && !isLoggedIn) {
             Logger.d("NotesActivity: onCreate - REDIRECTING to login (passcode required and not logged in)")
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.putExtra(LoginActivity.EXTRA_IS_SETUP, false)
-            startActivity(intent)
+            NavigationUtils.navigateToLogin(this)
             finish()
             return
         }
@@ -112,15 +111,12 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
 
     override fun showNoteDetail(noteId: Int) {
         Logger.d("NotesActivity: showNoteDetail - noteId: $noteId")
-        val intent = Intent(this, NoteDetailActivity::class.java)
-        intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, noteId)
-        startActivity(intent)
+        NavigationUtils.navigateToNoteDetail(this, noteId)
     }
 
     override fun showAddNote() {
         Logger.d("NotesActivity: showAddNote")
-        val intent = Intent(this, NoteDetailActivity::class.java)
-        startActivity(intent)
+        NavigationUtils.navigateToNoteDetail(this)
     }
 
     override fun updateTrashBinVisibility(isVisible: Boolean) {
@@ -159,13 +155,11 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
 
     private fun handleTrashBin() {
         Logger.d("NotesActivity: handleTrashBin")
-        val intent = Intent(this, com.dmitryy.notesapp.ui.trash.TrashBinActivity::class.java)
-        startActivity(intent)
+        NavigationUtils.navigateToTrashBin(this)
     }
 
     private fun handleSettings() {
         Logger.d("NotesActivity: handleSettings")
-        val intent = Intent(this, com.dmitryy.notesapp.ui.settings.SettingsActivity::class.java)
-        startActivity(intent)
+        NavigationUtils.navigateToSettings(this)
     }
 }

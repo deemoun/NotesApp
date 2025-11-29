@@ -12,6 +12,7 @@ import com.dmitryy.notesapp.R
 import com.dmitryy.notesapp.ui.list.NotesActivity
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
+import com.dmitryy.notesapp.utils.NavigationUtils
 import com.dmitryy.notesapp.utils.PreferencesManager
 import com.dmitryy.notesapp.utils.ToastUtils
 
@@ -63,9 +64,7 @@ class LoginActivity : ComponentActivity(), LoginContract.View {
     override fun navigateToMain() {
         Logger.d("LoginActivity: navigateToMain - setting session logged in and navigating")
         com.dmitryy.notesapp.utils.SessionManager.setLoggedIn(true)
-        val intent = Intent(this, NotesActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        NavigationUtils.navigateToNotes(this, clearStack = true)
         finish()
     }
 
