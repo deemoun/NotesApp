@@ -37,6 +37,9 @@
         <activity
             android:name=".ui.pinned.PinnedNotesActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.url.UrlNotesActivity"
+            android:exported="false" />
         
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -78,6 +78,10 @@
     <string name="no_pinned_notes">No pinned notes</string>
     <string name="pin_note">Pin note</string>
 
+    <!-- URL Notes -->
+    <string name="notes_with_urls">Notes with URLs</string>
+    <string name="no_notes_with_urls">No notes with URLs found</string>
+
     <!-- Debug -->
     <string name="debug_section">Debug</string>
 </resources>

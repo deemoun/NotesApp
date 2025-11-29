@@ -79,6 +79,7 @@ fun NotesListScreen(
     onImportJson: () -> Unit,
     onTrashBin: () -> Unit,
     onPinned: () -> Unit,
+    onUrlNotes: () -> Unit,
     onSettings: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -123,6 +124,13 @@ fun NotesListScreen(
                             onClick = {
                                 showMenu = false
                                 onPinned()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.notes_with_urls)) },
+                            onClick = {
+                                showMenu = false
+                                onUrlNotes()
                             }
                         )
                         if (showTrashBin) {

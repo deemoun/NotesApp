@@ -2,7 +2,6 @@ package com.dmitryy.notesapp.ui.list
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,8 +10,6 @@ import com.dmitryy.notesapp.NotesApplication
 import com.dmitryy.notesapp.R
 import com.dmitryy.notesapp.data.Note
 import com.dmitryy.notesapp.data.NotesRepository
-import com.dmitryy.notesapp.ui.detail.NoteDetailActivity
-import com.dmitryy.notesapp.ui.login.LoginActivity
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
 import com.dmitryy.notesapp.utils.NavigationUtils
@@ -87,6 +84,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
                     onImportJson = { handleImportJson() },
                     onTrashBin = { handleTrashBin() },
                     onPinned = { handlePinned() },
+                    onUrlNotes = { handleUrlNotes() },
                     onSettings = { handleSettings() }
                 )
             }
@@ -163,6 +161,11 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
     private fun handlePinned() {
         Logger.d("NotesActivity: handlePinned")
         NavigationUtils.navigateToPinned(this)
+    }
+
+    private fun handleUrlNotes() {
+        Logger.d("NotesActivity: handleUrlNotes")
+        NavigationUtils.navigateToUrlNotes(this)
     }
 
     private fun handleSettings() {

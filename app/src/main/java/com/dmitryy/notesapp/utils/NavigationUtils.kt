@@ -25,6 +25,11 @@ object NavigationUtils {
         val intent = Intent(context, com.dmitryy.notesapp.ui.pinned.PinnedNotesActivity::class.java)
         context.startActivity(intent)
     }
+
+    fun navigateToUrlNotes(context: Context) {
+        val intent = Intent(context, com.dmitryy.notesapp.ui.url.UrlNotesActivity::class.java)
+        context.startActivity(intent)
+    }
     
     fun navigateToSettings(context: Context) {
         val intent = Intent(context, SettingsActivity::class.java)

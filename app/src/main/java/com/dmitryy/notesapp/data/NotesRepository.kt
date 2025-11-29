@@ -52,4 +52,6 @@ class NotesRepository(private val noteDao: NoteDao) {
     suspend fun togglePin(noteId: Int, isPinned: Boolean) {
         noteDao.togglePin(noteId, isPinned)
     }
+
+    val notesWithUrls: Flow<List<Note>> = noteDao.getNotesWithUrls()
 }
