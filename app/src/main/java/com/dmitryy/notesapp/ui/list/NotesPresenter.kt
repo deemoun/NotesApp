@@ -49,6 +49,14 @@ class NotesPresenter(private val repository: NotesRepository) : NotesContract.Pr
                 view?.showNotes(notes)
             }
         }
+
+        launch {
+            repository.deletedNotes.collectLatest { deletedNotes ->
+                val hasDeletedNotes = deletedNotes.isNotEmpty()
+                Logger.d("NotesPresenter: loadNotes - hasDeletedNotes: $hasDeletedNotes")
+                view?.updateTrashBinVisibility(hasDeletedNotes)
+            }
+        }
     }
 
     override fun onNoteClicked(note: Note) {
@@ -64,7 +72,7 @@ class NotesPresenter(private val repository: NotesRepository) : NotesContract.Pr
     override fun onDeleteNote(note: Note) {
         Logger.d("NotesPresenter: onDeleteNote - noteId: ${note.id}, title: '${note.title}'")
         launch {
-            repository.delete(note)
+            repository.softDelete(note.id)
         }
     }
 

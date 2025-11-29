@@ -9,10 +9,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
-    @Query("SELECT * FROM notes ORDER BY createdAt DESC")
+    @Query("SELECT * FROM notes WHERE isDeleted = 0 ORDER BY createdAt DESC")
     fun getAll(): Flow<List<Note>>
 
-    @Query("SELECT * FROM notes WHERE title LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%' ORDER BY createdAt DESC")
+    @Query("SELECT * FROM notes WHERE isDeleted = 1 ORDER BY createdAt DESC")
+    fun getDeletedNotes(): Flow<List<Note>>
+
+    @Query("SELECT * FROM notes WHERE (isDeleted = 0) AND (title LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%') ORDER BY createdAt DESC")
     fun searchNotes(query: String): Flow<List<Note>>
 
     @Query("SELECT * FROM notes WHERE id = :id")
@@ -26,6 +29,18 @@ interface NoteDao {
 
     @Delete
     suspend fun delete(note: Note)
+
+    @Query("UPDATE notes SET isDeleted = 1 WHERE id = :id")
+    suspend fun softDelete(id: Int)
+
+    @Query("UPDATE notes SET isDeleted = 0 WHERE id = :id")
+    suspend fun restore(id: Int)
+
+    @Query("UPDATE notes SET isDeleted = 0 WHERE isDeleted = 1")
+    suspend fun restoreAll()
+
+    @Query("DELETE FROM notes WHERE isDeleted = 1")
+    suspend fun emptyTrash()
 
     @Query("DELETE FROM notes")
     suspend fun deleteAll()

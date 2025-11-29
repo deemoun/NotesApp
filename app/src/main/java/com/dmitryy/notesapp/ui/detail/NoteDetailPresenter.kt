@@ -75,7 +75,7 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
         launch {
             currentNote?.let { note ->
                 Logger.d("NoteDetailPresenter: deleteNote - deleting note id: ${note.id}, title: '${note.title}'")
-                repository.delete(note)
+                repository.softDelete(note.id)
                 view?.close()
             } ?: Logger.w("NoteDetailPresenter: deleteNote - no current note to delete")
         }

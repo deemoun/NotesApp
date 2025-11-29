@@ -9,6 +9,7 @@ interface NotesContract {
         fun showNotes(notes: List<Note>)
         fun showNoteDetail(noteId: Int)
         fun showAddNote()
+        fun updateTrashBinVisibility(isVisible: Boolean)
     }
 
     interface Presenter : BasePresenter<View> {

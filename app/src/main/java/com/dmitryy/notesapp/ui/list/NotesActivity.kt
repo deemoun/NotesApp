@@ -21,6 +21,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
 
     private lateinit var presenter: NotesContract.Presenter
     private val notesState = mutableStateOf<List<Note>>(emptyList())
+    private val showTrashBinState = mutableStateOf(false)
 
     private val importJsonLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
@@ -74,6 +75,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
             NotesAppTheme {
                 NotesListScreen(
                     notes = notesState.value,
+                    showTrashBin = showTrashBinState.value,
                     onNoteClick = { note -> presenter.onNoteClicked(note) },
                     onAddNoteClick = { presenter.onAddNoteClicked() },
                     onDeleteNote = { note -> presenter.onDeleteNote(note) },
@@ -82,6 +84,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
                     onAbout = { handleAbout() },
                     onExportJson = { handleExportJson() },
                     onImportJson = { handleImportJson() },
+                    onTrashBin = { handleTrashBin() },
                     onSettings = { handleSettings() }
                 )
             }
@@ -119,6 +122,11 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
         startActivity(intent)
     }
 
+    override fun updateTrashBinVisibility(isVisible: Boolean) {
+        Logger.d("NotesActivity: updateTrashBinVisibility - isVisible: $isVisible")
+        showTrashBinState.value = isVisible
+    }
+
     override fun showError(message: String) {
         Logger.e("NotesActivity: showError - $message")
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -146,6 +154,12 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
     private fun handleImportJson() {
         Logger.d("NotesActivity: handleImportJson - launching file picker")
         importJsonLauncher.launch("application/json")
+    }
+
+    private fun handleTrashBin() {
+        Logger.d("NotesActivity: handleTrashBin")
+        val intent = Intent(this, com.dmitryy.notesapp.ui.trash.TrashBinActivity::class.java)
+        startActivity(intent)
     }
 
     private fun handleSettings() {

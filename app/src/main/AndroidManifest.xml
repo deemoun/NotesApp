@@ -31,6 +31,9 @@
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name=".ui.trash.TrashBinActivity"
+            android:exported="false" />
         
         <provider
             android:name="androidx.core.content.FileProvider"

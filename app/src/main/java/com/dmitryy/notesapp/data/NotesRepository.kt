@@ -28,4 +28,22 @@ class NotesRepository(private val noteDao: NoteDao) {
     suspend fun deleteAll() {
         noteDao.deleteAll()
     }
+
+    val deletedNotes: Flow<List<Note>> = noteDao.getDeletedNotes()
+
+    suspend fun softDelete(id: Int) {
+        noteDao.softDelete(id)
+    }
+
+    suspend fun restore(id: Int) {
+        noteDao.restore(id)
+    }
+
+    suspend fun restoreAll() {
+        noteDao.restoreAll()
+    }
+
+    suspend fun emptyTrash() {
+        noteDao.emptyTrash()
+    }
 }

@@ -65,6 +65,7 @@ import java.util.Locale
 @Composable
 fun NotesListScreen(
     notes: List<Note>,
+    showTrashBin: Boolean,
     onNoteClick: (Note) -> Unit,
     onAddNoteClick: () -> Unit,
     onDeleteNote: (Note) -> Unit,
@@ -73,6 +74,7 @@ fun NotesListScreen(
     onAbout: () -> Unit,
     onExportJson: () -> Unit,
     onImportJson: () -> Unit,
+    onTrashBin: () -> Unit,
     onSettings: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -112,6 +114,15 @@ fun NotesListScreen(
                                 onImportJson()
                             }
                         )
+                        if (showTrashBin) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.trash_bin)) },
+                                onClick = {
+                                    showMenu = false
+                                    onTrashBin()
+                                }
+                            )
+                        }
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.settings)) },
                             onClick = {
