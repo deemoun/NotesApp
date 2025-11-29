@@ -75,15 +75,12 @@ fun NoteDetailScreen(
                     }
                 },
                 actions = {
-                    // Pin button (only if note exists)
-                    if (showDelete) {
-                        IconButton(onClick = onTogglePin) {
-                            Icon(
-                                imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                                contentDescription = if (isPinned) "Unpin" else "Pin",
-                                tint = if (isPinned) NeonPink else NeonCyan
-                            )
-                        }
+                    IconButton(onClick = onTogglePin) {
+                        Icon(
+                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                            contentDescription = if (isPinned) "Unpin" else "Pin",
+                            tint = if (isPinned) NeonPink else NeonCyan
+                        )
                     }
                     
                     // Save button

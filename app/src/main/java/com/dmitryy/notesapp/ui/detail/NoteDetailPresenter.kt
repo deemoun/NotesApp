@@ -14,6 +14,7 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
     private var view: NoteDetailContract.View? = null
     private val job = Job()
     private var currentNote: Note? = null
+    private var isPinnedState: Boolean = false
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -36,8 +37,9 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
             if (note != null) {
                 Logger.d("NoteDetailPresenter: loadNote - note found: '${note.title}'")
                 currentNote = note
+                isPinnedState = note.isPinned
                 view?.showNote(note)
-                view?.updatePinState(note.isPinned)
+                view?.updatePinState(isPinnedState)
             } else {
                 Logger.w("NoteDetailPresenter: loadNote - note not found for id: $id")
             }
@@ -55,14 +57,16 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
             val note = currentNote
             if (note != null) {
                 Logger.d("NoteDetailPresenter: saveNote - updating existing note id: ${note.id}")
-                val updatedNote = note.copy(title = title, content = content)
+                val updatedNote = note.copy(title = title, content = content, isPinned = isPinnedState)
                 repository.update(updatedNote)
+                currentNote = updatedNote
             } else {
                 Logger.d("NoteDetailPresenter: saveNote - creating new note")
                 val newNote = Note(
                     title = title,
                     content = content,
-                    createdAt = System.currentTimeMillis()
+                    createdAt = System.currentTimeMillis(),
+                    isPinned = isPinnedState
                 )
                 repository.insert(newNote)
             }
@@ -90,13 +94,16 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
     override fun togglePin() {
         Logger.d("NoteDetailPresenter: togglePin")
         launch {
+            val newPinState = !isPinnedState
+            isPinnedState = newPinState
+
             currentNote?.let { note ->
-                val newPinState = !note.isPinned
                 Logger.d("NoteDetailPresenter: togglePin - toggling pin for note id: ${note.id}, new state: $newPinState")
                 repository.togglePin(note.id, newPinState)
                 currentNote = note.copy(isPinned = newPinState)
-                view?.updatePinState(newPinState)
-            } ?: Logger.w("NoteDetailPresenter: togglePin - no current note to toggle pin")
+            } ?: Logger.d("NoteDetailPresenter: togglePin - toggling pin for new note, state: $newPinState")
+
+            view?.updatePinState(newPinState)
         }
     }
 }
