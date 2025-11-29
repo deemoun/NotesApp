@@ -12,6 +12,7 @@ import com.dmitryy.notesapp.data.Note
 import com.dmitryy.notesapp.data.NotesRepository
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
+import com.dmitryy.notesapp.utils.ToastUtils
 
 class NoteDetailActivity : ComponentActivity(), NoteDetailContract.View {
 
@@ -92,7 +93,7 @@ class NoteDetailActivity : ComponentActivity(), NoteDetailContract.View {
 
     override fun showError(message: String) {
         Logger.e("NoteDetailActivity: showError - $message")
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, message)
     }
 
     override fun exportNoteToPdf(title: String, content: String) {

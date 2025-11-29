@@ -14,6 +14,7 @@ import com.dmitryy.notesapp.data.NotesRepository
 import com.dmitryy.notesapp.ui.login.LoginActivity
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
+import com.dmitryy.notesapp.utils.ToastUtils
 
 class SettingsActivity : ComponentActivity(), SettingsContract.View {
 
@@ -63,17 +64,17 @@ class SettingsActivity : ComponentActivity(), SettingsContract.View {
 
     override fun showCacheCleared() {
         Logger.d("SettingsActivity: showCacheCleared")
-        Toast.makeText(this, getString(R.string.cache_cleared), Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, R.string.cache_cleared)
     }
 
     override fun showDatabaseNuked() {
         Logger.d("SettingsActivity: showDatabaseNuked")
-        Toast.makeText(this, getString(R.string.database_nuked), Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, R.string.database_nuked)
     }
 
     override fun showError(message: String) {
         Logger.e("SettingsActivity: showError - $message")
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, message)
     }
 
     override fun navigateToPasscodeSetup() {

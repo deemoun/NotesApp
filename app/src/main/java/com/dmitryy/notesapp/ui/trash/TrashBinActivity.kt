@@ -11,6 +11,7 @@ import com.dmitryy.notesapp.data.Note
 import com.dmitryy.notesapp.data.NotesRepository
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
+import com.dmitryy.notesapp.utils.ToastUtils
 
 class TrashBinActivity : ComponentActivity(), TrashBinContract.View {
 
@@ -32,19 +33,19 @@ class TrashBinActivity : ComponentActivity(), TrashBinContract.View {
                     notes = notesState.value,
                     onRestoreNote = { note ->
                         presenter.restoreNote(note)
-                        Toast.makeText(this, getString(R.string.note_restored), Toast.LENGTH_SHORT).show()
+                        ToastUtils.createToast(this, R.string.note_restored)
                     },
                     onDeleteForever = { note ->
                         presenter.deleteForever(note)
-                        Toast.makeText(this, getString(R.string.delete_forever), Toast.LENGTH_SHORT).show()
+                        ToastUtils.createToast(this, R.string.delete_forever)
                     },
                     onRestoreAll = {
                         presenter.restoreAll()
-                        Toast.makeText(this, getString(R.string.notes_restored), Toast.LENGTH_SHORT).show()
+                        ToastUtils.createToast(this, R.string.notes_restored)
                     },
                     onEmptyTrash = {
                         presenter.emptyTrash()
-                        Toast.makeText(this, getString(R.string.trash_cleared), Toast.LENGTH_SHORT).show()
+                        ToastUtils.createToast(this, R.string.trash_cleared)
                     },
                     onBack = { finish() }
                 )
@@ -62,10 +63,10 @@ class TrashBinActivity : ComponentActivity(), TrashBinContract.View {
     }
 
     override fun showMessage(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, message)
     }
 
     override fun showError(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, message)
     }
 }

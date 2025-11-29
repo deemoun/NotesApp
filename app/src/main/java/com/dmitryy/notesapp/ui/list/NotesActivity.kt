@@ -16,6 +16,7 @@ import com.dmitryy.notesapp.ui.login.LoginActivity
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
 import com.dmitryy.notesapp.utils.PreferencesManager
+import com.dmitryy.notesapp.utils.ToastUtils
 
 class NotesActivity : ComponentActivity(), NotesContract.View {
 
@@ -36,11 +37,11 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
                     Logger.d("NotesActivity: importJsonLauncher - content length: ${jsonContent.length}")
                     presenter.importNotes(jsonContent)
                     Logger.d("NotesActivity: importJsonLauncher - import successful")
-                    Toast.makeText(this, getString(R.string.import_success), Toast.LENGTH_SHORT).show()
+                    ToastUtils.createToast(this, R.string.import_success)
                 }
             } catch (e: Exception) {
                 Logger.e("NotesActivity: importJsonLauncher - import failed", e)
-                Toast.makeText(this, getString(R.string.import_failed, e.message), Toast.LENGTH_SHORT).show()
+                ToastUtils.createToast(this, getString(R.string.import_failed, e.message))
             }
         }
     }
@@ -129,12 +130,12 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
 
     override fun showError(message: String) {
         Logger.e("NotesActivity: showError - $message")
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, message)
     }
 
     private fun handleAbout() {
         Logger.d("NotesActivity: handleAbout")
-        Toast.makeText(this, getString(R.string.about_message), Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, R.string.about_message)
     }
 
     private fun handleExportJson() {
@@ -144,10 +145,10 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
             val shareIntent = com.dmitryy.notesapp.utils.FileUtils.saveAndShareJson(this, jsonContent)
             startActivity(Intent.createChooser(shareIntent, getString(R.string.export_json)))
             Logger.d("NotesActivity: handleExportJson - export successful")
-            Toast.makeText(this, getString(R.string.export_success), Toast.LENGTH_SHORT).show()
+            ToastUtils.createToast(this, R.string.export_success)
         } catch (e: Exception) {
             Logger.e("NotesActivity: handleExportJson - export failed", e)
-            Toast.makeText(this, getString(R.string.export_failed, e.message), Toast.LENGTH_SHORT).show()
+            ToastUtils.createToast(this, getString(R.string.export_failed, e.message))
         }
     }
 

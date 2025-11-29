@@ -13,6 +13,7 @@ import com.dmitryy.notesapp.ui.list.NotesActivity
 import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
 import com.dmitryy.notesapp.utils.PreferencesManager
+import com.dmitryy.notesapp.utils.ToastUtils
 
 class LoginActivity : ComponentActivity(), LoginContract.View {
 
@@ -85,6 +86,6 @@ class LoginActivity : ComponentActivity(), LoginContract.View {
 
     override fun showError(message: String) {
         Logger.e("LoginActivity: showError - $message")
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        ToastUtils.createToast(this, message)
     }
 }
