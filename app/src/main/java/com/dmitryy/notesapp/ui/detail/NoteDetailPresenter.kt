@@ -48,6 +48,12 @@ class NoteDetailPresenter(private val repository: NotesRepository) : NoteDetailC
 
     override fun saveNote(title: String, content: String) {
         Logger.d("NoteDetailPresenter: saveNote - title: '$title', content length: ${content.length}")
+        if (title.isBlank() && content.isBlank()) {
+            Logger.d("NoteDetailPresenter: saveNote - no content provided, closing without saving")
+            view?.close()
+            return
+        }
+
         if (title.isBlank()) {
             Logger.w("NoteDetailPresenter: saveNote - title is blank, aborting")
             return
