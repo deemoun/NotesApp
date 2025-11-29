@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -21,6 +24,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ViewList
+import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,10 +73,12 @@ import java.util.Locale
 fun NotesListScreen(
     notes: List<Note>,
     showTrashBin: Boolean,
+    viewMode: ViewMode,
     onNoteClick: (Note) -> Unit,
     onAddNoteClick: () -> Unit,
     onDeleteNote: (Note) -> Unit,
     onPinNote: (Note) -> Unit,
+    onToggleViewMode: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onClearSearch: () -> Unit,
     onAbout: () -> Unit,
@@ -94,10 +101,40 @@ fun NotesListScreen(
                     IconButton(onClick = { showMenu = true }) {
                         Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.menu), tint = NeonCyan)
                     }
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    stringResource(
+                                        if (viewMode == ViewMode.GRID) {
+                                            R.string.switch_to_list_view
+                                        } else {
+                                            R.string.switch_to_grid_view
+                                        }
+                                    )
+                                )
+                            },
+                            leadingIcon = {
+                                val icon = if (viewMode == ViewMode.GRID) {
+                                    Icons.Filled.ViewList
+                                } else {
+                                    Icons.Filled.ViewModule
+                                }
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = stringResource(
+                                        if (viewMode == ViewMode.GRID) R.string.list_view else R.string.grid_view
+                                    )
+                                )
+                            },
+                            onClick = {
+                                showMenu = false
+                                onToggleViewMode()
+                            }
+                        )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.about)) },
                             onClick = {
@@ -226,70 +263,13 @@ fun NotesListScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 } else {
-                    LazyColumn(
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(notes, key = { it.id }) { note ->
-                            val dismissState = rememberSwipeToDismissBoxState(
-                                confirmValueChange = {
-                                    when (it) {
-                                        SwipeToDismissBoxValue.EndToStart -> {
-                                            onDeleteNote(note)
-                                            true
-                                        }
-                                        SwipeToDismissBoxValue.StartToEnd -> {
-                                            onPinNote(note)
-                                            false
-                                        }
-                                        else -> false
-                                    }
-                                }
-                            )
-
-                            SwipeToDismissBox(
-                                state = dismissState,
-                                backgroundContent = {
-                                    val color = when (dismissState.dismissDirection) {
-                                        SwipeToDismissBoxValue.StartToEnd -> NeonCyan
-                                        SwipeToDismissBoxValue.EndToStart -> Color.Red
-                                        else -> Color.Transparent
-                                    }
-                                    val alignment = when (dismissState.dismissDirection) {
-                                        SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
-                                        SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
-                                        else -> Alignment.Center
-                                    }
-
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(color, RoundedCornerShape(8.dp))
-                                            .padding(16.dp),
-                                        contentAlignment = alignment
-                                    ) {
-                                        when (dismissState.dismissDirection) {
-                                            SwipeToDismissBoxValue.StartToEnd -> Icon(
-                                                imageVector = Icons.Default.PushPin,
-                                                contentDescription = stringResource(R.string.pin_note),
-                                                tint = Color.Black
-                                            )
-                                            SwipeToDismissBoxValue.EndToStart -> Icon(
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = stringResource(R.string.delete),
-                                                tint = Color.White
-                                            )
-                                            else -> {}
-                                        }
-                                    }
-                                },
-                                content = {
-                                    NoteItem(note = note, onClick = { onNoteClick(note) })
-                                },
-                                enableDismissFromStartToEnd = true
-                            )
-                        }
-                    }
+                    NotesCollection(
+                        notes = notes,
+                        viewMode = viewMode,
+                        onNoteClick = onNoteClick,
+                        onDeleteNote = onDeleteNote,
+                        onPinNote = onPinNote
+                    )
                 }
             }
         }
@@ -297,7 +277,125 @@ fun NotesListScreen(
 }
 
 @Composable
-fun NoteItem(note: Note, onClick: () -> Unit) {
+private fun NotesCollection(
+    notes: List<Note>,
+    viewMode: ViewMode,
+    onNoteClick: (Note) -> Unit,
+    onDeleteNote: (Note) -> Unit,
+    onPinNote: (Note) -> Unit,
+) {
+    when (viewMode) {
+        ViewMode.LIST -> NotesList(
+            notes = notes,
+            onNoteClick = onNoteClick,
+            onDeleteNote = onDeleteNote,
+            onPinNote = onPinNote
+        )
+
+        ViewMode.GRID -> NotesGrid(
+            notes = notes,
+            onNoteClick = onNoteClick
+        )
+    }
+}
+
+@Composable
+private fun NotesList(
+    notes: List<Note>,
+    onNoteClick: (Note) -> Unit,
+    onDeleteNote: (Note) -> Unit,
+    onPinNote: (Note) -> Unit
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(notes, key = { it.id }) { note ->
+            val dismissState = rememberSwipeToDismissBoxState(
+                confirmValueChange = {
+                    when (it) {
+                        SwipeToDismissBoxValue.EndToStart -> {
+                            onDeleteNote(note)
+                            true
+                        }
+
+                        SwipeToDismissBoxValue.StartToEnd -> {
+                            onPinNote(note)
+                            false
+                        }
+
+                        else -> false
+                    }
+                }
+            )
+
+            SwipeToDismissBox(
+                state = dismissState,
+                backgroundContent = {
+                    val color = when (dismissState.dismissDirection) {
+                        SwipeToDismissBoxValue.StartToEnd -> NeonCyan
+                        SwipeToDismissBoxValue.EndToStart -> Color.Red
+                        else -> Color.Transparent
+                    }
+                    val alignment = when (dismissState.dismissDirection) {
+                        SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
+                        SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
+                        else -> Alignment.Center
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color, RoundedCornerShape(8.dp))
+                            .padding(16.dp),
+                        contentAlignment = alignment
+                    ) {
+                        when (dismissState.dismissDirection) {
+                            SwipeToDismissBoxValue.StartToEnd -> Icon(
+                                imageVector = Icons.Default.PushPin,
+                                contentDescription = stringResource(R.string.pin_note),
+                                tint = Color.Black
+                            )
+
+                            SwipeToDismissBoxValue.EndToStart -> Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = Color.White
+                            )
+
+                            else -> {}
+                        }
+                    }
+                },
+                content = {
+                    NoteItem(note = note, onClick = { onNoteClick(note) }, isGrid = false)
+                },
+                enableDismissFromStartToEnd = true
+            )
+        }
+    }
+}
+
+@Composable
+private fun NotesGrid(
+    notes: List<Note>,
+    onNoteClick: (Note) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 160.dp),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(notes, key = { it.id }) { note ->
+            NoteItem(note = note, onClick = { onNoteClick(note) }, isGrid = true)
+        }
+    }
+}
+
+@Composable
+fun NoteItem(note: Note, onClick: () -> Unit, isGrid: Boolean) {
     val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
     val formattedDate = dateFormat.format(Date(note.createdAt))
 
@@ -308,7 +406,7 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
             .background(DarkCard)
             .border(2.dp, NeonCyan, RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
-            .padding(16.dp)
+            .padding(if (isGrid) 12.dp else 16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -317,7 +415,7 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
             Text(
                 text = note.title,
                 color = NeonCyan,
-                fontSize = 18.sp,
+                fontSize = if (isGrid) 16.sp else 18.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -335,15 +433,15 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
         Text(
             text = note.content,
             color = TextPrimary,
-            fontSize = 14.sp,
-            maxLines = 2,
+            fontSize = if (isGrid) 13.sp else 14.sp,
+            maxLines = if (isGrid) 3 else 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 4.dp)
         )
         Text(
             text = formattedDate,
             color = TextSecondary,
-            fontSize = 12.sp,
+            fontSize = if (isGrid) 11.sp else 12.sp,
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(top = 8.dp)
