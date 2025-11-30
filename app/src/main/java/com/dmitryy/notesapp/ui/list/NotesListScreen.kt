@@ -299,6 +299,7 @@ private fun NotesCollection(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotesList(
     notes: List<Note>,

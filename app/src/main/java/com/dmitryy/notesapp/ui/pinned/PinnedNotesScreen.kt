@@ -118,7 +118,7 @@ fun PinnedNotesScreen(
                                 }
                             },
                             content = {
-                                NoteItem(note = note, onClick = { onNoteClick(note) })
+                                NoteItem(note = note, onClick = { onNoteClick(note) }, isGrid = false)
                             }
                         )
                     }

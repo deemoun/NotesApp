@@ -166,7 +166,7 @@ fun TrashBinScreen(
                                 }
                             },
                             content = {
-                                NoteItem(note = note, onClick = {}) // No click action in trash
+                                NoteItem(note = note, onClick = {}, isGrid = false) // No click action in trash
                             }
                         )
                     }

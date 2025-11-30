@@ -71,7 +71,7 @@ fun UrlNotesScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(notes, key = { it.id }) { note ->
-                        NoteItem(note = note, onClick = { onNoteClick(note) })
+                        NoteItem(note = note, onClick = { onNoteClick(note) }, isGrid = false)
                     }
                 }
             }
