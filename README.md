@@ -22,15 +22,14 @@ https://www.youtube.com/playlist?list=PL0zZBw8Dq429NOr4MPDZHolp8UoFVuNPI
 
 The application follows the **MVP (Model-View-Presenter)** pattern to separate UI logic from business logic.
 
-### 📱 Key Activities
+### 📱 Key Activities & Screens
 
 1.  **`NotesActivity` (Main Entry)**
-    -   **Role**: Displays the list of notes.
+    -   **Role**: Displays and manages the primary note list.
     -   **Logic**:
-        -   Checks `SessionManager` and `PreferencesManager` on `onCreate`.
-        -   Redirects to `LoginActivity` if a passcode is required and the session is invalid.
-        -   Uses `NotesPresenter` to fetch data from `NotesRepository`.
-    -   **UI**: `NotesListScreen` (Compose).
+        -   Validates session and passcode state with `SessionManager`/`PreferencesManager`.
+        -   Loads notes via `NotesPresenter`/`NotesRepository` and keeps trash-bin visibility in sync.
+    -   **UI**: `NotesListScreen` (Compose) with **search**, **grid/list toggle**, **JSON import/export**, and quick access to settings, trash, pinned notes, and URL-filtered notes.
 
 2.  **`NoteDetailActivity`**
     -   **Role**: Create, view, and edit individual notes.
@@ -54,6 +53,18 @@ The application follows the **MVP (Model-View-Presenter)** pattern to separate U
         -   Toggle "Require passcode on opening".
         -   Initiates the passcode setup flow.
 
+5.  **`TrashBinActivity`**
+    -   **Role**: Shows soft-deleted notes with options to restore individually, restore all, or empty the bin permanently.
+    -   **UI**: `TrashBinScreen` (Compose) driven by `TrashBinPresenter`/`NotesRepository`.
+
+6.  **`PinnedNotesActivity`**
+    -   **Role**: Presents notes that have been marked as pinned from the main list.
+    -   **UI**: `PinnedNotesScreen` (Compose) with unpin support and navigation back to details.
+
+7.  **`UrlNotesActivity`**
+    -   **Role**: Filters notes containing URLs for quick link discovery.
+    -   **UI**: `UrlNotesScreen` (Compose) powered by `UrlNotesPresenter` querying URL-bearing notes.
+
 ### 🔐 Security & Session Management
 
 The app implements a robust security model to protect user notes.
@@ -68,8 +79,8 @@ The app implements a robust security model to protect user notes.
 ### 💾 Data Layer
 
 -   **`AppDatabase`**: Room database instance.
--   **`Note`**: Entity representing a note (id, title, content, timestamp, color).
--   **`NoteDao`**: Data Access Object for database operations.
+-   **`Note`**: Entity representing a note (id, title, content, timestamp) with flags for soft deletion and pinning.
+-   **`NoteDao`**: Data Access Object for database operations including search, trash management, pin toggling, and URL filtering.
 -   **`NotesRepository`**: Abstraction layer between Presenters and the DAO.
 
 ### 🎨 UI & Theming
@@ -89,6 +100,9 @@ com.dmitryy.notesapp
 │   ├── detail/     # Note detail screen (Activity, Presenter, Contract)
 │   ├── login/      # Login screen (Activity, Presenter, Contract)
 │   ├── settings/   # Settings screen (Activity, Presenter, Contract)
+│   ├── trash/      # Trash bin screen for soft-deleted notes
+│   ├── pinned/     # Pinned notes screen
+│   ├── url/        # Notes filtered to links/URLs
 │   └── theme/      # Compose theme and color definitions
-└── utils/          # Helpers (Logger, FileUtils, PreferencesManager, SessionManager)
+└── utils/          # Helpers (Logger, FileUtils, PreferencesManager, SessionManager, NavigationUtils)
 ```
