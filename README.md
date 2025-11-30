@@ -5,6 +5,8 @@ A secure, cyberpunk-themed note-taking application for Android, built with moder
 Developed live as part of live stream series:
 https://www.youtube.com/playlist?list=PL0zZBw8Dq429NOr4MPDZHolp8UoFVuNPI
 
+![Notes App Screenshot](images/notes.png)
+
 ## 🚀 Technical Stack
 
 - **Language**: Kotlin
