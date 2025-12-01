@@ -64,6 +64,11 @@ import com.dmitryy.notesapp.ui.theme.NeonCyan
 import com.dmitryy.notesapp.ui.theme.NeonPink
 import com.dmitryy.notesapp.ui.theme.TextPrimary
 import com.dmitryy.notesapp.ui.theme.TextSecondary
+import com.dmitryy.notesapp.ui.components.NotesDropdownMenu
+import com.dmitryy.notesapp.ui.components.NotesSearchBar
+import com.dmitryy.notesapp.ui.components.EmptyNotesState
+import com.dmitryy.notesapp.ui.components.NoSearchResultsState
+import com.dmitryy.notesapp.utils.SwipeUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -101,92 +106,20 @@ fun NotesListScreen(
                     IconButton(onClick = { showMenu = true }) {
                         Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.menu), tint = NeonCyan)
                     }
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
-                        ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    stringResource(
-                                        if (viewMode == ViewMode.GRID) {
-                                            R.string.switch_to_list_view
-                                        } else {
-                                            R.string.switch_to_grid_view
-                                        }
-                                    )
-                                )
-                            },
-                            leadingIcon = {
-                                val icon = if (viewMode == ViewMode.GRID) {
-                                    Icons.Filled.ViewList
-                                } else {
-                                    Icons.Filled.ViewModule
-                                }
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = stringResource(
-                                        if (viewMode == ViewMode.GRID) R.string.list_view else R.string.grid_view
-                                    )
-                                )
-                            },
-                            onClick = {
-                                showMenu = false
-                                onToggleViewMode()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.about)) },
-                            onClick = {
-                                showMenu = false
-                                onAbout()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.export_json)) },
-                            onClick = {
-                                showMenu = false
-                                onExportJson()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.import_json)) },
-                            onClick = {
-                                showMenu = false
-                                onImportJson()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.pinned_notes)) },
-                            onClick = {
-                                showMenu = false
-                                onPinned()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.notes_with_urls)) },
-                            onClick = {
-                                showMenu = false
-                                onUrlNotes()
-                            }
-                        )
-                        if (showTrashBin) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.trash_bin)) },
-                                onClick = {
-                                    showMenu = false
-                                    onTrashBin()
-                                }
-                            )
-                        }
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.settings)) },
-                            onClick = {
-                                showMenu = false
-                                onSettings()
-                            }
-                        )
-                    }
+                    NotesDropdownMenu(
+                        expanded = showMenu,
+                        viewMode = viewMode,
+                        showTrashBin = showTrashBin,
+                        onDismiss = { showMenu = false },
+                        onToggleViewMode = onToggleViewMode,
+                        onAbout = onAbout,
+                        onExportJson = onExportJson,
+                        onImportJson = onImportJson,
+                        onPinned = onPinned,
+                        onUrlNotes = onUrlNotes,
+                        onTrashBin = onTrashBin,
+                        onSettings = onSettings
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = DarkBg
@@ -210,60 +143,24 @@ fun NotesListScreen(
                 .padding(paddingValues)
         ) {
             if (showSearch) {
-                TextField(
-                    value = searchQuery,
-                    onValueChange = {
+                NotesSearchBar(
+                    searchQuery = searchQuery,
+                    onSearchQueryChanged = {
                         searchQuery = it
                         onSearchQueryChanged(it)
                     },
-                    placeholder = { Text(stringResource(R.string.search_notes), color = TextSecondary) },
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search), tint = NeonCyan) },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = {
-                                searchQuery = ""
-                                onClearSearch()
-                            }) {
-                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.clear), tint = NeonPink)
-                            }
-                        }
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = DarkCard,
-                        unfocusedContainerColor = DarkCard,
-                        focusedTextColor = NeonCyan,
-                        unfocusedTextColor = TextPrimary,
-                        cursorColor = NeonCyan,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                    onClearSearch = {
+                        searchQuery = ""
+                        onClearSearch()
+                    }
                 )
             }
 
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                if (notes.isEmpty() && searchQuery.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.add_first_note),
-                        color = NeonPink,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                } else if (notes.isEmpty() && searchQuery.isNotEmpty()) {
-                    Text(
-                        text = stringResource(R.string.no_results_found),
-                        color = TextSecondary,
-                        fontSize = 18.sp,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                } else {
-                    NotesCollection(
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    notes.isEmpty() && searchQuery.isEmpty() -> EmptyNotesState()
+                    notes.isEmpty() && searchQuery.isNotEmpty() -> NoSearchResultsState()
+                    else -> NotesCollection(
                         notes = notes,
                         viewMode = viewMode,
                         onNoteClick = onNoteClick,
@@ -313,61 +210,23 @@ private fun NotesList(
     ) {
         items(notes, key = { it.id }) { note ->
             val dismissState = rememberSwipeToDismissBoxState(
-                confirmValueChange = {
-                    when (it) {
-                        SwipeToDismissBoxValue.EndToStart -> {
-                            onDeleteNote(note)
-                            true
-                        }
-
-                        SwipeToDismissBoxValue.StartToEnd -> {
-                            // Toggle pin: if already pinned, unpin it; otherwise pin it
-                            onPinNote(note)
-                            false
-                        }
-
-                        else -> false
-                    }
+                confirmValueChange = { dismissValue ->
+                    SwipeUtils.handleSwipeAction(
+                        dismissValue = dismissValue,
+                        note = note,
+                        onDelete = onDeleteNote,
+                        onTogglePin = onPinNote
+                    )
                 }
             )
 
             SwipeToDismissBox(
                 state = dismissState,
                 backgroundContent = {
-                    val color = when (dismissState.dismissDirection) {
-                        SwipeToDismissBoxValue.StartToEnd -> if (note.isPinned) Color(0xFFFFA500) else NeonCyan
-                        SwipeToDismissBoxValue.EndToStart -> Color.Red
-                        else -> Color.Transparent
-                    }
-                    val alignment = when (dismissState.dismissDirection) {
-                        SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
-                        SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
-                        else -> Alignment.Center
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color, RoundedCornerShape(8.dp))
-                            .padding(16.dp),
-                        contentAlignment = alignment
-                    ) {
-                        when (dismissState.dismissDirection) {
-                            SwipeToDismissBoxValue.StartToEnd -> Icon(
-                                imageVector = Icons.Default.PushPin,
-                                contentDescription = if (note.isPinned) "Unpin" else stringResource(R.string.pin_note),
-                                tint = if (note.isPinned) Color.White else Color.Black
-                            )
-
-                            SwipeToDismissBoxValue.EndToStart -> Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.delete),
-                                tint = Color.White
-                            )
-
-                            else -> {}
-                        }
-                    }
+                    SwipeUtils.SwipeBackground(
+                        direction = dismissState.dismissDirection,
+                        note = note
+                    )
                 },
                 content = {
                     NoteItem(note = note, onClick = { onNoteClick(note) }, isGrid = false)
