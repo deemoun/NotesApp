@@ -14,6 +14,7 @@ import com.dmitryy.notesapp.ui.theme.NotesAppTheme
 import com.dmitryy.notesapp.utils.Logger
 import com.dmitryy.notesapp.utils.NavigationUtils
 import com.dmitryy.notesapp.utils.PreferencesManager
+import com.dmitryy.notesapp.utils.SessionPreferences
 import com.dmitryy.notesapp.utils.ToastUtils
 
 class NotesActivity : ComponentActivity(), NotesContract.View {
@@ -21,7 +22,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
     private lateinit var presenter: NotesContract.Presenter
     private val notesState = mutableStateOf<List<Note>>(emptyList())
     private val showTrashBinState = mutableStateOf(false)
-    private val viewModeState = mutableStateOf(ViewMode.LIST)
+    private val viewModeState = mutableStateOf(SessionPreferences.viewMode)
 
     private val importJsonLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
@@ -97,6 +98,7 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
     override fun onResume() {
         super.onResume()
         Logger.d("NotesActivity: onResume")
+        viewModeState.value = SessionPreferences.viewMode
     }
 
     override fun onDestroy() {
@@ -133,10 +135,12 @@ class NotesActivity : ComponentActivity(), NotesContract.View {
     }
 
     private fun toggleViewMode() {
-        viewModeState.value = when (viewModeState.value) {
+        val updatedMode = when (viewModeState.value) {
             ViewMode.LIST -> ViewMode.GRID
             ViewMode.GRID -> ViewMode.LIST
         }
+        SessionPreferences.setViewMode(updatedMode)
+        viewModeState.value = updatedMode
     }
 
     private fun handleAbout() {
