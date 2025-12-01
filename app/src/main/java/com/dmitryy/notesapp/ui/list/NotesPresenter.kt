@@ -77,9 +77,17 @@ class NotesPresenter(private val repository: NotesRepository) : NotesContract.Pr
     }
 
     override fun onPinNote(note: Note) {
-        Logger.d("NotesPresenter: onPinNote - noteId: ${note.id}, title: '${note.title}'")
+        Logger.d("NotesPresenter: onPinNote - noteId: ${note.id}, title: '${note.title}', current isPinned: ${note.isPinned}")
         launch {
-            repository.togglePin(note.id, true)
+            // Fetch the latest state from database to ensure we have the current pin status
+            val currentNote = repository.getNoteById(note.id)
+            if (currentNote != null) {
+                val newPinState = !currentNote.isPinned
+                Logger.d("NotesPresenter: onPinNote - toggling from ${currentNote.isPinned} to $newPinState")
+                repository.togglePin(note.id, newPinState)
+            } else {
+                Logger.w("NotesPresenter: onPinNote - note not found in database")
+            }
         }
     }
 

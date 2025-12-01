@@ -321,6 +321,7 @@ private fun NotesList(
                         }
 
                         SwipeToDismissBoxValue.StartToEnd -> {
+                            // Toggle pin: if already pinned, unpin it; otherwise pin it
                             onPinNote(note)
                             false
                         }
@@ -334,7 +335,7 @@ private fun NotesList(
                 state = dismissState,
                 backgroundContent = {
                     val color = when (dismissState.dismissDirection) {
-                        SwipeToDismissBoxValue.StartToEnd -> NeonCyan
+                        SwipeToDismissBoxValue.StartToEnd -> if (note.isPinned) Color(0xFFFFA500) else NeonCyan
                         SwipeToDismissBoxValue.EndToStart -> Color.Red
                         else -> Color.Transparent
                     }
@@ -354,8 +355,8 @@ private fun NotesList(
                         when (dismissState.dismissDirection) {
                             SwipeToDismissBoxValue.StartToEnd -> Icon(
                                 imageVector = Icons.Default.PushPin,
-                                contentDescription = stringResource(R.string.pin_note),
-                                tint = Color.Black
+                                contentDescription = if (note.isPinned) "Unpin" else stringResource(R.string.pin_note),
+                                tint = if (note.isPinned) Color.White else Color.Black
                             )
 
                             SwipeToDismissBoxValue.EndToStart -> Icon(
