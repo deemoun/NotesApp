@@ -36,6 +36,9 @@ class PinnedNotesActivity : ComponentActivity(), PinnedNotesContract.View {
                     onUnpinNote = { note ->
                         presenter.unpinNote(note)
                     },
+                    onDeleteNote = { note ->
+                        presenter.deleteNote(note)
+                    },
                     onBack = { finish() }
                 )
             }

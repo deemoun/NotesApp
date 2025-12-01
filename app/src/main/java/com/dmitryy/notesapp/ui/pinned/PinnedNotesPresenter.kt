@@ -51,4 +51,11 @@ class PinnedNotesPresenter(private val repository: NotesRepository) : PinnedNote
             repository.togglePin(note.id, false)
         }
     }
+
+    override fun deleteNote(note: Note) {
+        Logger.d("PinnedNotesPresenter: deleteNote - noteId: ${note.id}")
+        launch {
+            repository.softDelete(note.id)
+        }
+    }
 }

@@ -13,5 +13,6 @@ interface PinnedNotesContract {
         fun loadPinnedNotes()
         fun onNoteClicked(note: Note)
         fun unpinNote(note: Note)
+        fun deleteNote(note: Note)
     }
 }
