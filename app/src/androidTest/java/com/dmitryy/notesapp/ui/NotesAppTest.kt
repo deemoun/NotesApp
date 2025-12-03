@@ -12,6 +12,8 @@ class NotesAppTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<NotesActivity>()
+    val listPage = NotesListPage(composeTestRule)
+    val detailPage = NoteDetailPage(composeTestRule)
 
     @Before
     fun setup() {
@@ -27,11 +29,13 @@ class NotesAppTest {
     }
 
     @Test
-    fun testCreateAndVerifyNote() {
-        val listPage = NotesListPage(composeTestRule)
-        val detailPage = NoteDetailPage(composeTestRule)
+    fun openCreateScreenAndLeave(){
+        listPage.clickAddNote()
+        detailPage.clickBack()
+    }
 
-        // 1. Create a new note
+    @Test
+    fun testCreateAndVerifyNote() {
         listPage.clickAddNote()
         
         val testTitle = "Test Note ${System.currentTimeMillis()}"
@@ -39,24 +43,18 @@ class NotesAppTest {
 
         detailPage.enterTitle(testTitle)
         detailPage.enterContent(testContent)
-        
-        // 2. Save and go back
+
         detailPage.clickSave()
 
-        // 3. Observe that it's visible in the list view
         listPage.assertNoteVisible(testTitle)
 
-        // 4. Open the note again
         listPage.clickNote(testTitle)
 
-        // Verify content
         detailPage.assertTitle(testTitle)
         detailPage.assertContent(testContent)
 
-        // 5. Pressing the back button
         detailPage.clickBack()
-        
-        // Verify we are back in list
+
         listPage.assertNoteVisible(testTitle)
     }
 }
