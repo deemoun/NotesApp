@@ -15,6 +15,8 @@ class NotesAppTest {
     val listPage = NotesListPage(composeTestRule)
     val detailPage = NoteDetailPage(composeTestRule)
     val settingsPage = SettingsPage(composeTestRule)
+    val pinnedNotesPage = PinnedNotesPage(composeTestRule)
+    val trashBinPage = TrashBinPage(composeTestRule)
 
     @Before
     fun setup() {
@@ -37,7 +39,32 @@ class NotesAppTest {
 
     @Test
     fun checkSettingsScreen(){
+        listPage.openMenu()
+        listPage.clickSettings()
+        settingsPage.assertPasscodeCheckboxVisible()
+        settingsPage.clickClearCache()
+        settingsPage.clickBack()
+    }
 
+    @Test
+    fun pressPinnedNotesAndNavigateBack(){
+        listPage.openMenu()
+        listPage.clickPinnedNotes()
+        pinnedNotesPage.assertEmptyStateVisible()
+        pinnedNotesPage.clickBack()
+    }
+
+    @Test
+    fun emptyTrashCheck(){
+        listPage.clickAddNote()
+        detailPage.enterTitle("Remove Me")
+        detailPage.enterContent("To be removed...")
+        detailPage.clickSave()
+        listPage.openMenu()
+        listPage.clickTrashBin()
+        trashBinPage.clickMenu()
+        trashBinPage.clickEmptyTrash()
+        trashBinPage.clickBack()
     }
 
     @Test
