@@ -4,6 +4,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.dmitryy.notesapp.R
 import com.dmitryy.notesapp.ui.list.ViewMode
@@ -43,6 +45,7 @@ fun NotesDropdownMenu(
                     )
                 )
             },
+            modifier = Modifier.testTag("toggle_view_menu_item"),
             onClick = {
                 onDismiss()
                 onToggleViewMode()
@@ -52,6 +55,7 @@ fun NotesDropdownMenu(
         // About
         DropdownMenuItem(
             text = { Text(stringResource(R.string.about)) },
+            modifier = Modifier.testTag("about_menu_item"),
             onClick = {
                 onDismiss()
                 onAbout()
@@ -61,6 +65,7 @@ fun NotesDropdownMenu(
         // Export JSON
         DropdownMenuItem(
             text = { Text(stringResource(R.string.export_json)) },
+            modifier = Modifier.testTag("export_json_menu_item"),
             onClick = {
                 onDismiss()
                 onExportJson()
@@ -70,6 +75,7 @@ fun NotesDropdownMenu(
         // Import JSON
         DropdownMenuItem(
             text = { Text(stringResource(R.string.import_json)) },
+            modifier = Modifier.testTag("import_json_menu_item"),
             onClick = {
                 onDismiss()
                 onImportJson()
@@ -79,6 +85,7 @@ fun NotesDropdownMenu(
         // Pinned Notes
         DropdownMenuItem(
             text = { Text(stringResource(R.string.pinned_notes)) },
+            modifier = Modifier.testTag("pinned_notes_menu_item"),
             onClick = {
                 onDismiss()
                 onPinned()
@@ -88,6 +95,7 @@ fun NotesDropdownMenu(
         // Notes with URLs
         DropdownMenuItem(
             text = { Text(stringResource(R.string.notes_with_urls)) },
+            modifier = Modifier.testTag("url_notes_menu_item"),
             onClick = {
                 onDismiss()
                 onUrlNotes()
@@ -98,6 +106,7 @@ fun NotesDropdownMenu(
         if (showTrashBin) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.trash_bin)) },
+                modifier = Modifier.testTag("trash_bin_menu_item"),
                 onClick = {
                     onDismiss()
                     onTrashBin()
@@ -108,6 +117,7 @@ fun NotesDropdownMenu(
         // Settings
         DropdownMenuItem(
             text = { Text(stringResource(R.string.settings)) },
+            modifier = Modifier.testTag("settings_menu_item"),
             onClick = {
                 onDismiss()
                 onSettings()
