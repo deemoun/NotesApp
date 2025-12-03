@@ -103,7 +103,7 @@ fun NotesListScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name), color = NeonCyan) },
                 actions = {
-                    IconButton(onClick = { showMenu = true }) {
+                    IconButton(onClick = { showMenu = true }, modifier = Modifier.testTag("menu_button")) {
                         Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.menu), tint = NeonCyan)
                     }
                     NotesDropdownMenu(
