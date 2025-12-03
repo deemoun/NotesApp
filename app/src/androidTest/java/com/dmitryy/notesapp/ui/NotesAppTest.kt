@@ -14,6 +14,7 @@ class NotesAppTest {
     val composeTestRule = createAndroidComposeRule<NotesActivity>()
     val listPage = NotesListPage(composeTestRule)
     val detailPage = NoteDetailPage(composeTestRule)
+    val settingsPage = SettingsPage(composeTestRule)
 
     @Before
     fun setup() {
@@ -32,6 +33,11 @@ class NotesAppTest {
     fun openCreateScreenAndLeave(){
         listPage.clickAddNote()
         detailPage.clickBack()
+    }
+
+    @Test
+    fun checkSettingsScreen(){
+
     }
 
     @Test
