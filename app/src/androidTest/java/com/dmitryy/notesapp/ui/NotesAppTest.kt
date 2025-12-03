@@ -1,7 +1,10 @@
 package com.dmitryy.notesapp.ui
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.platform.app.InstrumentationRegistry
+import com.dmitryy.notesapp.NotesApplication
 import com.dmitryy.notesapp.ui.list.NotesActivity
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -9,6 +12,19 @@ class NotesAppTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<NotesActivity>()
+
+    @Before
+    fun setup() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val app = context.applicationContext as NotesApplication
+        app.database.clearAllTables()
+        
+        try {
+            context.cacheDir.deleteRecursively()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     @Test
     fun testCreateAndVerifyNote() {

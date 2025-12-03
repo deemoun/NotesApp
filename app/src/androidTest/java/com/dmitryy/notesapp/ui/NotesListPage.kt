@@ -1,22 +1,21 @@
 package com.dmitryy.notesapp.ui
 
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
+import com.dmitryy.notesapp.ui.ComposeTestUtils.clickTag
+import com.dmitryy.notesapp.ui.ComposeTestUtils.clickText
+import com.dmitryy.notesapp.ui.ComposeTestUtils.assertTextIsDisplayed
 
 class NotesListPage(private val composeTestRule: ComposeTestRule) {
 
     fun clickAddNote() {
-        composeTestRule.onNodeWithTag("add_note_fab").performClick()
+        composeTestRule.clickTag("add_note_fab")
     }
 
     fun assertNoteVisible(title: String) {
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+        composeTestRule.assertTextIsDisplayed(title)
     }
 
     fun clickNote(title: String) {
-        composeTestRule.onNodeWithText(title).performClick()
+        composeTestRule.clickText(title)
     }
 }

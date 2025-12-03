@@ -1,35 +1,33 @@
 package com.dmitryy.notesapp.ui
 
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import com.dmitryy.notesapp.ui.ComposeTestUtils.clickTag
+import com.dmitryy.notesapp.ui.ComposeTestUtils.enterText
+import com.dmitryy.notesapp.ui.ComposeTestUtils.assertTagTextEquals
 
 class NoteDetailPage(private val composeTestRule: ComposeTestRule) {
 
     fun enterTitle(title: String) {
-        composeTestRule.onNodeWithTag("title_field").performTextInput(title)
+        composeTestRule.enterText("title_field", title)
     }
 
     fun enterContent(content: String) {
-        composeTestRule.onNodeWithTag("content_field").performTextInput(content)
+        composeTestRule.enterText("content_field", content)
     }
 
     fun clickSave() {
-        composeTestRule.onNodeWithTag("save_button").performClick()
+        composeTestRule.clickTag("save_button")
     }
 
     fun clickBack() {
-        composeTestRule.onNodeWithTag("back_button").performClick()
+        composeTestRule.clickTag("back_button")
     }
 
     fun assertTitle(title: String) {
-        composeTestRule.onNodeWithTag("title_field").assertTextEquals(title)
+        composeTestRule.assertTagTextEquals("title_field", title)
     }
 
     fun assertContent(content: String) {
-        composeTestRule.onNodeWithTag("content_field").assertTextEquals(content)
+        composeTestRule.assertTagTextEquals("content_field", content)
     }
 }
