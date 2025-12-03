@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,12 +64,12 @@ fun TrashBinScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.trash_bin), color = NeonCyan) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = onBack, modifier = Modifier.testTag("back_button")) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = NeonCyan)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showMenu = true }) {
+                    IconButton(onClick = { showMenu = true }, modifier = Modifier.testTag("menu_button")) {
                         Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.menu), tint = NeonCyan)
                     }
                     DropdownMenu(
@@ -80,14 +81,16 @@ fun TrashBinScreen(
                             onClick = {
                                 showMenu = false
                                 onRestoreAll()
-                            }
+                            },
+                            modifier = Modifier.testTag("restore_all_menu_item")
                         )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.empty_trash)) },
                             onClick = {
                                 showMenu = false
                                 onEmptyTrash()
-                            }
+                            },
+                            modifier = Modifier.testTag("empty_trash_menu_item")
                         )
                     }
                 },
@@ -107,13 +110,15 @@ fun TrashBinScreen(
                     Text(
                         text = stringResource(R.string.trash_empty),
                         color = TextSecondary,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        modifier = Modifier.testTag("trash_empty_text")
                     )
                 }
             } else {
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.testTag("trash_notes_list")
                 ) {
                     items(notes, key = { it.id }) { note ->
                         val dismissState = rememberSwipeToDismissBoxState(

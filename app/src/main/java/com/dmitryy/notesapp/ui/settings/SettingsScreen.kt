@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,7 +63,7 @@ fun SettingsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.settings), color = NeonCyan) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = onBack, modifier = Modifier.testTag("back_button")) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = NeonCyan)
                     }
                 },
@@ -92,7 +93,8 @@ fun SettingsScreen(
                         checkedColor = NeonCyan,
                         uncheckedColor = TextSecondary,
                         checkmarkColor = Color.Black
-                    )
+                    ),
+                    modifier = Modifier.testTag("passcode_checkbox")
                 )
                 Text(
                     text = stringResource(R.string.require_passcode),
@@ -113,6 +115,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
+                    .testTag("clear_cache_button")
             ) {
                 Text(stringResource(R.string.clear_cache))
             }
@@ -127,6 +130,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
+                    .testTag("nuke_database_button")
             ) {
                 Text(stringResource(R.string.nuke_database), fontWeight = FontWeight.Bold)
             }

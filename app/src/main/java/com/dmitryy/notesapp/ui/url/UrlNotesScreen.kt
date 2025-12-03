@@ -20,6 +20,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +43,7 @@ fun UrlNotesScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.notes_with_urls), color = NeonCyan) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = onBack, modifier = Modifier.testTag("back_button")) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = NeonCyan)
                     }
                 },
@@ -62,13 +63,15 @@ fun UrlNotesScreen(
                     Text(
                         text = stringResource(R.string.no_notes_with_urls),
                         color = TextSecondary,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        modifier = Modifier.testTag("no_notes_with_urls_text")
                     )
                 }
             } else {
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.testTag("url_notes_list")
                 ) {
                     items(notes, key = { it.id }) { note ->
                         NoteItem(note = note, onClick = { onNoteClick(note) }, isGrid = false)

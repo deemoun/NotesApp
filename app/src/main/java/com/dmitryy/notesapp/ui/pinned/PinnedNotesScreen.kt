@@ -22,6 +22,7 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +48,7 @@ fun PinnedNotesScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.pinned_notes), color = NeonCyan) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = onBack, modifier = Modifier.testTag("back_button")) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = NeonCyan)
                     }
                 },
@@ -67,13 +68,15 @@ fun PinnedNotesScreen(
                     Text(
                         text = stringResource(R.string.no_pinned_notes),
                         color = TextSecondary,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        modifier = Modifier.testTag("no_pinned_notes_text")
                     )
                 }
             } else {
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.testTag("pinned_notes_list")
                 ) {
                     items(notes, key = { it.id }) { note ->
                         val dismissState = rememberSwipeToDismissBoxState(
